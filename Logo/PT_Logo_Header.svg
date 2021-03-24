@@ -15,7 +15,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
-   sodipodi:docname="PT_Logo2.svg">
+   sodipodi:docname="PT_Logo_Header.svg">
   <defs
      id="defs2" />
   <sodipodi:namedview
@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.98994949"
-     inkscape:cx="505.56085"
-     inkscape:cy="323.60022"
+     inkscape:zoom="1.979899"
+     inkscape:cx="397.91037"
+     inkscape:cy="70.34419"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -48,7 +48,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -213,8 +213,8 @@
        x="12.519678"
        y="283.94202"
        transform="scale(0.99619365,1.0038209)"><tspan
-   id="tspan3963"
-   style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:serif;-inkscape-font-specification:serif;fill:#87decd;fill-opacity:1;stroke:#ffffff;stroke-width:0.19847709">ppt</tspan></text>
+         id="tspan3963"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:serif;-inkscape-font-specification:serif;fill:#87decd;fill-opacity:1;stroke:#ffffff;stroke-width:0.19847709">ppt</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.58333302px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
@@ -228,20 +228,20 @@
          style="stroke-width:0.26458332" /></text>
     <path
        style="fill:#87decd;fill-opacity:1;fill-rule:evenodd;stroke-width:0.26203394"
-       d="m 35.847426,271.54991 c -1.54907,4.49998 -5.212461,11.32933 -6.115907,12.89903 -0.695564,1.20851 -3.491373,5.70902 -6.074564,9.01707 H 208.80122 v -21.9161 z"
+       d="m 35.99574,271.59576 c -1.549069,4.49998 -5.212461,11.32925 -6.115907,12.89895 -0.695563,1.20851 -3.491372,5.70897 -6.074563,9.01702 h 180.37606 c 2.64163,0 4.76819,-2.12655 4.76819,-4.76818 v -12.3946 c 0,-2.5416 -1.97022,-4.60046 -4.47208,-4.75319 z"
        id="rect49"
        inkscape:connector-curvature="0" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:16.53902435px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#87decd;fill-opacity:1;stroke:#ffffff;stroke-width:0.41347557"
-       x="49.700291"
-       y="246.62546"
+       x="44.755974"
+       y="247.35072"
        id="text30"
-       transform="matrix(0.85743568,0.01186656,-0.01613759,1.1660449,0,0)"><tspan
+       transform="matrix(0.85751096,0.00342136,-0.00465279,1.1661473,0,0)"><tspan
          sodipodi:role="line"
          id="tspan28"
-         x="49.700291"
-         y="246.62546"
+         x="44.755974"
+         y="247.35072"
          style="fill:#87decd;fill-opacity:1;stroke:#ffffff;stroke-width:0.41347557">Project Pic Triangulation</tspan></text>
   </g>
 </svg>
