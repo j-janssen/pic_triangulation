@@ -9,6 +9,7 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
+import os
 
 def sgn(x):
     if(x < 0):
@@ -130,9 +131,18 @@ class SOM(object):
 
 
 # ----------------------------------------------------------------------------------------------------
-# Bild ist im gleichen Verzeichnis, wie das Python Programm
-pic_path = "/home/joerg/Documents/Trainguation/test.jpg"
+# Konstanzen abfragen
+print('Das Neuronale Netz baut sich auf. Aber vorab brauchen wir noch ein paar Infos.')
+rel_path = input('Eingabe von dem Bildpfad - Bsp.: Images/test.jpg : ')
+script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+abs_file_path = os.path.join(script_dir, rel_path)
+fineness = int(input('Eingabe von der Netzfeinheit: - Bsp.: 20 : '))
+max_iteration = int(input('Eingabe von der Trainingsanzahl - Bsp.: 20 : '))
+lear_rate = float(input('Eingabe von der Lernrate - Bsp.: 0.1 : '))
+print('Nun gehts los! :)')
 
-NN = SOM(pic_path, 20)
-NN.training(5, 0.1)
+
+NN = SOM(abs_file_path, fineness)
+NN.training(max_iteration, lear_rate)
 NN.gen_image()
+
