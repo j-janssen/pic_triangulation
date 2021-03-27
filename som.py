@@ -131,7 +131,7 @@ class SOM(object):
 
 
 # ----------------------------------------------------------------------------------------------------
-# Konstanzen abfragen
+# Ein paar Abfragen bevor es startet
 print('Das Neuronale Netz baut sich auf. Aber vorab brauchen wir noch ein paar Infos.')
 rel_path = input('Eingabe von dem Bildpfad - Bsp.: Images/test.jpg : ')
 script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
