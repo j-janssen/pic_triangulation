@@ -78,26 +78,25 @@ class SOM(object):
         h = (self.pic_height -1)/2
         for y in range(self.fineness -1):
             for x in range(self.fineness -1):
-                d.append(draw.Lines(int(w-self.weights[x][y][0]),int(h-self.weights[x][y][1]),
-                                    int(w-self.weights[x+1][y][0]),int(h-self.weights[x+1][y][1]),
-                                    int(w-self.weights[x][y+1][0]),int(h-self.weights[x][y+1][1]),
-                                    int(w-self.weights[x][y][0]),int(h-self.weights[x][y][1]),
+                d.append(draw.Lines(int(self.weights[x][y][0]-w),int(h-self.weights[x][y][1]),
+                                    int(self.weights[x+1][y][0]-w),int(h-self.weights[x+1][y][1]),
+                                    int(self.weights[x][y+1][0]-w),int(h-self.weights[x][y+1][1]),
+                                    int(self.weights[x][y][0]-w),int(h-self.weights[x][y][1]),
                                     close=False,
                                     fill='#%02x%02x%02x' % (int(self.weights[x][y][2]),int(self.weights[x][y][3]),int(self.weights[x][y][4])) ,
                                     ))
         for y in range(1,self.fineness):
             for x in range(1,self.fineness):
-                d.append(draw.Lines(int(w-self.weights[x][y][0]),int(h-self.weights[x][y][1]),
-                                    int(w-self.weights[x-1][y][0]),int(h-self.weights[x-1][y][1]),
-                                    int(w-self.weights[x][y-1][0]),int(h-self.weights[x][y-1][1]),
-                                    int(w-self.weights[x][y][0]),int(h-self.weights[x][y][1]),
+                d.append(draw.Lines(int(self.weights[x][y][0]-w),int(h-self.weights[x][y][1]),
+                                    int(self.weights[x-1][y][0]-w),int(h-self.weights[x-1][y][1]),
+                                    int(self.weights[x][y-1][0]-w),int(h-self.weights[x][y-1][1]),
+                                    int(self.weights[x][y][0]-w),int(h-self.weights[x][y][1]),
                                     close=False,
                                     fill='#%02x%02x%02x' % (int(self.weights[x][y][2]),int(self.weights[x][y][3]),int(self.weights[x][y][4])) ,
                                     ))
         d.setPixelScale(1)
         d.saveSvg('test.svg')   #is saved in home directory
         d.savePng('test.png')   #is saved in home directory
-
 
             
 # ----------------------------------------------------------------------------------------------------
