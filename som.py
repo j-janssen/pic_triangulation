@@ -8,14 +8,9 @@ import math
 import random
 import numpy as np
 import matplotlib.pyplot as plt
-from PIL import Image
-import os
-
-def sgn(x):
-    if(x < 0):
-        return -1
-    else: 
-        return 1
+from PIL import Image       #for image input
+import os                   #for image input - image path
+import drawSvg as draw      #for image output
 
 # ----------------------------------------------------------------------------------------------------
 # NN - Klasse
@@ -31,72 +26,26 @@ class SOM(object):
         self.rgb_pic = im.convert('RGB')
         X = np.round(np.linspace(0,self.pic_width -1, fineness))
         Y = np.round(np.linspace(0,self.pic_height -1 , fineness))
-        self.weights = np.array([[[x,y,self.rgb_pic.getpixel((x, y))[0],self.rgb_pic.getpixel((x, y))[1],self.rgb_pic.getpixel((x, y))[2]] for x in X] for y in Y] )
+        self.weights = np.array([[
+                                [x,y,self.rgb_pic.getpixel((x, y))[0],self.rgb_pic.getpixel((x, y))[1],self.rgb_pic.getpixel((x, y))[2]]
+                                for x in X] for y in Y])
         self.fineness = fineness
-
-    def plot(self):
-        for i in range(self.fineness-1):
-            for j in range(self.fineness -1 ):
-                plt.plot([self.weights[i][j][0], self.weights[i][j+1][0]], [self.weights[i][j][1], self.weights[i][j+1][1]], 'ro-' , markersize = 2)
-                plt.plot([self.weights[i][j][0], self.weights[i+1][j][0]], [self.weights[i][j][1], self.weights[i+1][j][1]], 'ro-' , markersize = 2)
-            plt.plot([self.weights[i][self.fineness-1][0], self.weights[i+1][self.fineness-1][0]], [self.weights[i][self.fineness-1][1], self.weights[i+1][self.fineness-1][1]], 'ro-' , markersize = 2)
-        for j in range(self.fineness -1 ):
-                plt.plot([self.weights[self.fineness-1][j][0], self.weights[self.fineness-1][j+1][0]], [self.weights[self.fineness-1][j][1], self.weights[self.fineness-1][j+1][1]], 'ro-' , markersize = 2)
-        for i in range(1,self.fineness): 
-            for j in range(i):
-                plt.plot([self.weights[i-j][j][0], self.weights[i-(j+1)][j+1][0]], [self.weights[i-j][j][1], self.weights[i-(j+1)][j+1][1]], 'ro-' , markersize = 2)
-        for i in range(1,self.fineness): 
-            for j in range(self.fineness-1-i):
-                plt.plot([self.weights[self.fineness-1-j][i+j][0], self.weights[self.fineness-1-(j+1)][i+j+1][0]], [self.weights[self.fineness-1-j][i+j][1], self.weights[self.fineness-1-(j+1)][i+j+1][1]], 'ro-' , markersize = 2)
-        plt.xlabel('x-Achse')
-        plt.ylabel('y-Achse')
-        plt.title('SOM')
-        plt.show()
-
-    def in_triangle(self, point, A, B, C):
-        return ((np.dot(np.array([(B-A)[1],(A-B)[0]]), point -A) > 0) and (np.dot(np.array([(C-B)[1],(B-C)[0]]), point -B) > 0) and (np.dot(np.array([(A-C)[1],(C-A)[0]]), point -C) > 0)) or ((np.dot(np.array([(B-A)[1],(A-B)[0]]), point -A) < 0) and (np.dot(np.array([(C-B)[1],(B-C)[0]]), point -B) < 0) and (np.dot(np.array([(A-C)[1],(C-A)[0]]), point -C) < 0)) 
-
-    def get_color(self, point):
-        for i in range(self.fineness -2):
-            j = 0
-            if(self.in_triangle(point, np.array([self.weights[i][j][0],self.weights[i][j][1]]), np.array([self.weights[i][j+1][0],self.weights[i][j+1][1]]), np.array([self.weights[i+1][j][0],self.weights[i+1][j][1]]))):
-                return (self.weights[i][j][2],self.weights[i][j][3],self.weights[i][j][4])
-            j = self.fineness -2
-            if(self.in_triangle(point,  np.array([self.weights[i][j][0],self.weights[i][j][1]]), np.array([self.weights[i+1][j][0],self.weights[i+1][j][1]]) , np.array([self.weights[i+1][j-1][0],self.weights[i+1][j-1][1]]))):
-                return (self.weights[i][j][2],self.weights[i][j][3],self.weights[i][j][4])
-            for j in range(1,self.fineness -2):
-                if(self.in_triangle(point, np.array([self.weights[i][j][0],self.weights[i][j][1]]), np.array([self.weights[i][j+1][0],self.weights[i][j+1][1]]), np.array([self.weights[i+1][j][0],self.weights[i+1][j][1]])) or self.in_triangle(point,  np.array([self.weights[i][j][0],self.weights[i][j][1]]), np.array([self.weights[i+1][j][0],self.weights[i+1][j][1]]) , np.array([self.weights[i+1][j-1][0],self.weights[i+1][j-1][1]]))):
-                    return (self.weights[i][j][2],self.weights[i][j][3],self.weights[i][j][4])
-        return (0,0,0)
-
-    def gen_image(self):
-        data = np.zeros((self.pic_height, self.pic_width, 3), dtype= np.uint8)
-        for x in range(self.pic_height -1):
-            for y in range(self.pic_width -1):
-                data[x][y] = self.get_color(np.array([y,x]))
-            if(x/(self.pic_height-1) * 100 % 10 == 0):
-                print("Das Bild ist zu " + str(x/(self.pic_height-1) * 100) + "% generiert! ")
-        pic = Image.fromarray(data, 'RGB')
-        pic.save('my_pic.png')
-        pic.show()
 
     def get_dist(self, A, B):
         dist = abs(A[0] - B[0]) + abs(A[1]-B[1]) 
         temp = min(abs(B[0]-A[0]), abs(B[1]-A[1]))
-        dist = dist - 0.5 * abs(sgn(B[0]-A[0]) * temp - sgn(B[1]-A[1])* temp)
+        dist = dist - 0.5 * abs(np.sign(B[0]-A[0]) * temp - np.sign(B[1]-A[1])* temp)
         return dist
 
     def get_winner(self, point):
-        k = 0
-        l = 0
-        min = 3 * 255**2 + self.pic_height**2 + self.pic_width **2
+        k,l = (0,0)
+        min = np.linalg.norm(np.subtract(point, self.weights[0][0]))
         for i in range(self.fineness):
             for j in range(self.fineness):
                 temp = np.linalg.norm(np.subtract(point, self.weights[i][j]))
                 if(temp < min):
                     min = temp
-                    k = i
-                    l = j
+                    k,l = (i,j)
         return (k,l)
 
     def dist_fct(self, dist, rad):
@@ -107,7 +56,7 @@ class SOM(object):
 
     def training(self, max_iteration, learn_rate):
         rad = 3
-        max_iteration = max_iteration * self.pic_height * self.pic_width
+        max_iteration = max_iteration
         for stepp in range(max_iteration):
             if((stepp/max_iteration *100) % 10 == 0):
                 print("Das Training ist zu " + str(stepp/ max_iteration *100) + "% beendet!")
@@ -122,25 +71,49 @@ class SOM(object):
                         self.weights[i][j] += learn_rate * np.subtract( point ,self.weights[i][j]) * self.dist_fct(abs(i-k)+abs(j-l), rad)
                 rad = rad * 0.9999
         print("Das Training ist abgeschlossen!")
+
+    def gen_image(self):
+        d = draw.Drawing(self.pic_width, self.pic_height, origin='center', displayInline=False)
+        w = (self.pic_width -1)/2
+        h = (self.pic_height -1)/2
+        for y in range(self.fineness -1):
+            for x in range(self.fineness -1):
+                d.append(draw.Lines(int(w-self.weights[x][y][0]),int(h-self.weights[x][y][1]),
+                                    int(w-self.weights[x+1][y][0]),int(h-self.weights[x+1][y][1]),
+                                    int(w-self.weights[x][y+1][0]),int(h-self.weights[x][y+1][1]),
+                                    int(w-self.weights[x][y][0]),int(h-self.weights[x][y][1]),
+                                    close=False,
+                                    fill='#%02x%02x%02x' % (int(self.weights[x][y][2]),int(self.weights[x][y][3]),int(self.weights[x][y][4])) ,
+                                    ))
+        for y in range(1,self.fineness):
+            for x in range(1,self.fineness):
+                d.append(draw.Lines(int(w-self.weights[x][y][0]),int(h-self.weights[x][y][1]),
+                                    int(w-self.weights[x-1][y][0]),int(h-self.weights[x-1][y][1]),
+                                    int(w-self.weights[x][y-1][0]),int(h-self.weights[x][y-1][1]),
+                                    int(w-self.weights[x][y][0]),int(h-self.weights[x][y][1]),
+                                    close=False,
+                                    fill='#%02x%02x%02x' % (int(self.weights[x][y][2]),int(self.weights[x][y][3]),int(self.weights[x][y][4])) ,
+                                    ))
+        d.setPixelScale(1)
+        d.saveSvg('test.svg')   #is saved in home directory
+        d.savePng('test.png')   #is saved in home directory
+
+
             
-
-
 # ----------------------------------------------------------------------------------------------------
-# Test
+# Interface - Ein paar Abfragen bevor es startet
 
-
-
-# ----------------------------------------------------------------------------------------------------
-# Ein paar Abfragen bevor es startet
 print('Das Neuronale Netz baut sich auf. Aber vorab brauchen wir noch ein paar Infos.')
 rel_path = input('Eingabe von dem Bildpfad - Bsp.: Images/test.jpg : ')
-script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+script_dir = os.path.dirname(__file__) 
 abs_file_path = os.path.join(script_dir, rel_path)
 fineness = int(input('Eingabe von der Netzfeinheit: - Bsp.: 20 : '))
-max_iteration = int(input('Eingabe von der Trainingsanzahl - Bsp.: 20 : '))
+max_iteration = int(input('Eingabe von der Trainingsanzahl - Bsp.: 50000 : '))
 lear_rate = float(input('Eingabe von der Lernrate - Bsp.: 0.1 : '))
 print('Nun gehts los! :)')
 
+# ----------------------------------------------------------------------------------------------------
+# Ausführung
 
 NN = SOM(abs_file_path, fineness)
 NN.training(max_iteration, lear_rate)

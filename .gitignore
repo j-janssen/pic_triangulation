@@ -1,3 +1,6 @@
 # my notes program #
 ####################
 *.xopp
+*.ipynb_checkpoints
+*.xopp~
+
