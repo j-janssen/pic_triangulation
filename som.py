@@ -6,6 +6,7 @@
 
 import math
 import random
+from tqdm import tqdm
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image       #for image input
@@ -57,20 +58,18 @@ class SOM(object):
     def training(self, max_iteration, learn_rate):
         rad = 3
         max_iteration = max_iteration
-        for stepp in range(max_iteration):
-            if((stepp/max_iteration *100) % 10 == 0):
-                print("Das Training ist zu " + str(stepp/ max_iteration *100) + "% beendet!")
+        print('Das Training beginnt.')
+        for stepp in tqdm(range(max_iteration)):
             x = random.randint(0,self.pic_height -1)
             y = random.randint(0, self.pic_width -1)
             r,g,b = self.rgb_pic.getpixel((y,x))
             point = np.array([y,x,r,g,b])
             k,l = self.get_winner(point)
-            for i in range(self.fineness):
-                for j in range(self.fineness):
+            for i in range(1,self.fineness-1):
+                for j in range(1,self.fineness-1):
                     if(self.dist_fct(self.get_dist([i,j],[k,l]), rad) != 0):
                         self.weights[i][j] += learn_rate * np.subtract( point ,self.weights[i][j]) * self.dist_fct(abs(i-k)+abs(j-l), rad)
                 rad = rad * 0.9999
-        print("Das Training ist abgeschlossen!")
 
     def gen_image(self):
         d = draw.Drawing(self.pic_width, self.pic_height, origin='center', displayInline=False)
@@ -103,7 +102,7 @@ class SOM(object):
 # Interface - Ein paar Abfragen bevor es startet
 
 print('Das Neuronale Netz baut sich auf. Aber vorab brauchen wir noch ein paar Infos.')
-rel_path = input('Eingabe von dem Bildpfad - Bsp.: Images/test.jpg : ')
+rel_path = input('Eingabe von dem Bildpfad - Bsp.: Images/test_pic_01.jpg : ')
 script_dir = os.path.dirname(__file__) 
 abs_file_path = os.path.join(script_dir, rel_path)
 fineness = int(input('Eingabe von der Netzfeinheit: - Bsp.: 20 : '))
