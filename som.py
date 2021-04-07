@@ -71,7 +71,7 @@ class SOM(object):
                         self.weights[i][j] += learn_rate * np.subtract( point ,self.weights[i][j]) * self.dist_fct(abs(i-k)+abs(j-l), rad)
                 rad = rad * 0.9999
 
-    def gen_image(self):
+    def gen_image(self,abs_file_path):
         d = draw.Drawing(self.pic_width, self.pic_height, origin='center', displayInline=False)
         w = (self.pic_width -1)/2
         h = (self.pic_height -1)/2
@@ -94,8 +94,8 @@ class SOM(object):
                                     fill='#%02x%02x%02x' % (int(self.weights[x][y][2]),int(self.weights[x][y][3]),int(self.weights[x][y][4])) ,
                                     ))
         d.setPixelScale(1)
-        d.saveSvg('test.svg')   #is saved in home directory
-        d.savePng('test.png')   #is saved in home directory
+        d.saveSvg(abs_file_path[0:-4] + '_pt.svg')   #is saved in home directory
+        d.savePng(abs_file_path[0:-4] + '_pt.png')   #is saved in home directory
 
             
 # ----------------------------------------------------------------------------------------------------
@@ -115,5 +115,5 @@ print('Nun gehts los! :)')
 
 NN = SOM(abs_file_path, fineness)
 NN.training(max_iteration, lear_rate)
-NN.gen_image()
+NN.gen_image(abs_file_path)
 
