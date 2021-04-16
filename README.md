@@ -9,9 +9,9 @@ Now, a few words to the organisation. We will work via GitHub (see folder or htt
 
 Here is a brief guideline with the **Milestones** for the first stage:  
 * **The blueprint of the Algo** (Preliminary) 
-    * - [ ] Stepp 1: List possible algos that solve the problem!  
-    * - [ ] Stepp 2: Pic one by evaluating the pros and cons!
-    * - [ ] Stepp 3: Devide the workload into managable chunks/ blocks! 
+    *  [x] Stepp 1: List possible algos that solve the problem!  
+    *  [x] Stepp 2: Pic one by evaluating the pros and cons!
+    *  [x] Stepp 3: Devide the workload into managable chunks/ blocks! 
 
 * **The Awakening of the Algo** (Main Part)
     * - [ ] Stepp 1: Code in Python (version 1)! 
