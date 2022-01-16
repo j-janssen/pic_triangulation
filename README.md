@@ -3,9 +3,7 @@
 ## The Milestones & the Three Stage Plan
 
 The **goal** of this project is to get familiar with different kinds of programming tools and methods. 
-Therefore we program an algorithm that aproximates a given picture with one-colored triangles. This project consists of three stages. First, we build the program (this will take most of the time). Then we make the algorithm accessible via web. And in the end, we develoape an app-version of the programm.
-
-Now, a few words to the organisation. We will work via GitHub (see folder or https://guides.github.com/activities/hello-world/). There we can build together the code without interference. Weekly, we meet in discussion sessions where we talk about progress and difficulties. Here we use Jupiter Notebook for presentations and protocols (see https://jupyter-notebook-beginner-guide.readthedocs.io/en/latest/). In this sessions we elaborate the amount of work and devide it into blocks (ideally independent of each other). One is free to pic and work on a block.  
+Therefore an algorithm that approximates a given picture with one-colored triangles is considered. This project consists of three stages. First, the program itself(this will take most of the time) and then the accessibillity via web. Lastly, the app-version.
 
 Here is a brief guideline with the **Milestones** for the first stage:  
 * **The blueprint of the Algo** (Preliminary) 
