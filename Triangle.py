@@ -66,25 +66,11 @@ class SOM(object):
                 rad = rad * 0.9999
 
     def gen_image(self,abs_file_path):
-        list1 = [self.train_pts[0][0]]
-        list2 = [self.train_pts[0][99]]
-        list3 = [self.train_pts[99][99]]
-        list4 = [self.train_pts[99][0]]
-        for i in range(1,98):
-            if(self.get_winner(self.train_pts[0][i]) != self.get_winner(self.train_pts[0][i+1])):
-                list1 += [self.train_pts[0][i]]
-            if(self.get_winner(self.train_pts[i][99]) != self.get_winner(self.train_pts[i+1][99])):
-                list2 += [self.train_pts[i][99]]
-            if(self.get_winner(self.train_pts[99][99-i]) != self.get_winner(self.train_pts[99][99-(i+1)])):
-                list3 += [self.train_pts[99][99-i]]
-            if(self.get_winner(self.train_pts[99-i][0]) != self.get_winner(self.train_pts[99-(i+1)][0])):
-                list4 += [self.train_pts[99-i][0]]
-        list1 = list1 + list2 + list3 + list4
-        D = Triangulation.Triangle(list1[0][0],list1[0][1],list1[1][0],list1[1][1],self.train_pts[49][49][0],self.train_pts[49][49][1])
-        D.initialize(list1, self.train_pts[49][49][0],self.train_pts[49][49][1], D)
-        
-        for i in range(1,99):
-            for j in range(1,99):
+        D = Triangulation.Triangle(-1, -1, self.pic_width +1, self.pic_height+1, -1, self.pic_height+1)
+        D.initialize(D, self.pic_height, self.pic_width)
+        D.re_delaunay_prop(D)
+        for i in range(0,99,10):
+            for j in range(0,99,10):
                 if(self.get_winner(self.train_pts[i][j]) != self.get_winner(self.train_pts[i][j+1])):
                     D.add_point(self.train_pts[i][j][0],self.train_pts[i][j][1],D)
                     D.re_delaunay_prop(D)
@@ -100,6 +86,30 @@ class SOM(object):
                 if(D.get_triangle_via_point(self.train_pts[x][y][0]+1,self.train_pts[x][y][1]+1 ,D)):
                     x1, x2, y1,y2, z1,z2 = D.get_triangle_via_point(self.train_pts[x][y][0]+1,self.train_pts[x][y][1]+1 ,D)
                     k,l = self.get_winner(self.train_pts[x][y])
+                    if(x1 < 0):
+                        x1 = 0
+                    if(y1 < 0):
+                        y1 = 0
+                    if(z1 < 0):
+                        z1 = 0
+                    if(x2 < 0):
+                        x2 = 0
+                    if(y2 < 0):
+                        y2 = 0
+                    if(z2 < 0):
+                        z2 = 0
+                    if(x1 > self.pic_width):
+                        x1 = self.pic_width
+                    if(y1 > self.pic_width):
+                        y1 = self.pic_width
+                    if(z1 > self.pic_width):
+                        z1 = self.pic_width
+                    if(x2 > self.pic_height):
+                        x2 = self.pic_height
+                    if(y2 > self.pic_height):
+                        y2 = self.pic_height
+                    if(z2 > self.pic_height):
+                        z2 = self.pic_height
                     d.append(draw.Lines(int(x1-w),int(h-x2),
                                         int(y1-w),int(h-y2),
                                         int(z1-w),int(h-z2),
@@ -115,9 +125,9 @@ class SOM(object):
 rel_path = input('Please type your relative path of your picture! Exp: Images/test_pic_01.jpg : ')
 script_dir = os.path.dirname(__file__) 
 abs_file_path = os.path.join(script_dir, rel_path)
-fineness = 5
-max_iteration = 500000
-lear_rate = 0.1
+fineness = 10
+max_iteration = 100000
+lear_rate = 0.001
 print('Preprocessing starts!')
 
 

@@ -96,7 +96,7 @@ class Triangle{
         Point nbh_point(int i);
 
         list<int> get_triangle_via_point(int x, int y, shared_ptr<Triangle> this_ptr);
-        void initialize(vector<vector<int>> T, int z1, int z2, shared_ptr<Triangle> this_ptr);                     
+        void initialize(shared_ptr<Triangle> this_ptr, int h, int w);                     
         void split(int x, int y, shared_ptr<Triangle> this_ptr);
         shared_ptr<Triangle> add_point(int x, int y, shared_ptr<Triangle> this_ptr);
         bool delaunay_prop(int i);       
@@ -169,23 +169,10 @@ bool Triangle::pt_contained(int p1, int p2){
 }
 
 // initalizes triangles attached counter clockwise wrt the centerpoint z1,z2
-void Triangle::initialize(vector<vector<int>> T, int z1, int z2, shared_ptr<Triangle> this_ptr){
-    shared_ptr<Triangle> temp = this_ptr;
-    for(int i = 1; i< int(T.size()); i++){
-        if(i == int(T.size())-1){
-            auto E = make_shared<Triangle>(Triangle(T[i][0], T[i][1], T[0][0], T[0][1], z1, z2));
-            temp->nbh[1] = E;
-            E->nbh[2] = temp;
-            E->nbh[1] = this_ptr;
-            this_ptr-> nbh[2] = E;
-        }
-        else{
-            auto E = make_shared<Triangle>(Triangle(T[i][0], T[i][1], T[i+1][0], T[i+1][1], z1, z2));
-            temp->nbh[1] = E;
-            E->nbh[2] = temp;
-            temp = E;
-        }
-    }
+void Triangle::initialize(shared_ptr<Triangle> this_ptr, int h, int w){
+    auto E = make_shared<Triangle>(Triangle(-1, -1, w +1, -1, w +1, h+1));
+    this->nbh[0] = E;
+    E->nbh[2] = this_ptr; 
     return;
 }
 
