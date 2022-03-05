@@ -171,7 +171,7 @@ bool Triangle::pt_contained(int p1, int p2){
 // initalizes triangles attached counter clockwise wrt the centerpoint z1,z2
 void Triangle::initialize(shared_ptr<Triangle> this_ptr, int h, int w){
     auto E = make_shared<Triangle>(Triangle(-1, -1, w +1, -1, w +1, h+1));
-    this->nbh[0] = E;
+    this_ptr->nbh[0] = E;
     E->nbh[2] = this_ptr; 
     return;
 }
@@ -180,29 +180,28 @@ void Triangle::initialize(shared_ptr<Triangle> this_ptr, int h, int w){
 void Triangle::split(int x, int y, shared_ptr<Triangle> this_ptr){
     // assert (!pt_contained(x,y))
     auto v = get_pts();
-    auto A = this_ptr;
     auto B = nbh[1];
     auto C = nbh[2];
 
-    A->set_pts(v[0], v[1], Point(x,y));
+    this_ptr->set_pts(v[0], v[1], Point(x,y));
     auto D = make_shared<Triangle>(Triangle(v[1],v[2], Point(x,y)));
     auto E = make_shared<Triangle>(Triangle(Point(x,y), v[2], v[0]));
 
     D->nbh[0] = B;
     D->nbh[1] = E;
-    D->nbh[2] = A;
+    D->nbh[2] = this_ptr;
 
     E->nbh[0] = D;
     E->nbh[1] = C;
-    E->nbh[2] = A;
+    E->nbh[2] = this_ptr;
 
     nbh[1] = D;
     nbh[2] = E;
 
     if(B != nullptr)
-        B->nbh[B->nbh_position(A)] = D;
+        B->nbh[B->nbh_position(this_ptr)] = D;
     if(C != nullptr)
-        C->nbh[C->nbh_position(A)] = E;
+        C->nbh[C->nbh_position(this_ptr)] = E;
     return;
 }
 
@@ -321,6 +320,7 @@ void Triangle::re_delaunay_prop( shared_ptr<Triangle> this_ptr ){
                     }
                 }
                 Cnddts.front()->flip(j, Cnddts.front());
+                j = 3;
             }
         }
         Cnddts.pop();

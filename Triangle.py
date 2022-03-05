@@ -8,6 +8,9 @@ from PIL import Image       #for image input
 import os                   #for image input - image path
 import drawSvg as draw      #for image output
 
+def bound(low, high, value):
+    return max(low, min(high, value))
+
 class SOM(object):
 
     def __init__(self, pic_path, fineness):
@@ -83,39 +86,21 @@ class SOM(object):
         h = (self.pic_height -1)/2
         for y in range(99):
             for x in range(99):
-                if(D.get_triangle_via_point(self.train_pts[x][y][0]+1,self.train_pts[x][y][1]+1 ,D)):
-                    x1, x2, y1,y2, z1,z2 = D.get_triangle_via_point(self.train_pts[x][y][0]+1,self.train_pts[x][y][1]+1 ,D)
-                    k,l = self.get_winner(self.train_pts[x][y])
-                    if(x1 < 0):
-                        x1 = 0
-                    if(y1 < 0):
-                        y1 = 0
-                    if(z1 < 0):
-                        z1 = 0
-                    if(x2 < 0):
-                        x2 = 0
-                    if(y2 < 0):
-                        y2 = 0
-                    if(z2 < 0):
-                        z2 = 0
-                    if(x1 > self.pic_width):
-                        x1 = self.pic_width
-                    if(y1 > self.pic_width):
-                        y1 = self.pic_width
-                    if(z1 > self.pic_width):
-                        z1 = self.pic_width
-                    if(x2 > self.pic_height):
-                        x2 = self.pic_height
-                    if(y2 > self.pic_height):
-                        y2 = self.pic_height
-                    if(z2 > self.pic_height):
-                        z2 = self.pic_height
+                if(D.get_triangle_via_point(self.train_pts[y][x][0]+1,self.train_pts[y][x][1]+1 ,D)):
+                    x1, x2, y1,y2, z1,z2 = D.get_triangle_via_point(self.train_pts[y][x][0]+1,self.train_pts[y][x][1]+1 ,D)
+                    k,l = self.get_winner(self.train_pts[y][x])
+                    x1 = bound(0,self.pic_width, x1)
+                    y1 = bound(0,self.pic_width, y1)
+                    z1 = bound(0,self.pic_width, z1)
+                    x2 = bound(0,self.pic_height, x2)
+                    y2 = bound(0,self.pic_height, y2)
+                    z2 = bound(0,self.pic_height, z2)
                     d.append(draw.Lines(int(x1-w),int(h-x2),
                                         int(y1-w),int(h-y2),
                                         int(z1-w),int(h-z2),
                                         int(x1-w),int(h-x2),
                                         close=False,
-                                        fill='#%02x%02x%02x' % (int(self.weights[k][l][2]),int(self.weights[k][l][3]),int(self.weights[k][l][4])) ,
+                                        fill='#%02x%02x%02x' % (bound(0,255,int(self.weights[k][l][2])),bound(0,255,int(self.weights[k][l][3])),bound(0,255,int(self.weights[k][l][4]))) ,
                                         ))
         d.setPixelScale(1)
         d.saveSvg(abs_file_path[0:-4] + '_pt.svg')   #is saved in home directory
