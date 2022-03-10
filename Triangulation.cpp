@@ -7,75 +7,12 @@
 #include <list>
 #include <algorithm>
 #include <memory>
+#include <assert.h> 
+#include "LinAlg.h"
 
 using namespace std;
 
 namespace py = pybind11;
-
-class Point{
-
-    public:
-        Point()                             = delete;
-        Point(int a, int b): x(a),y(b){};
-        Point(const Point& p)               = default;
-        Point& operator=(const Point& p)    = default;
-        Point(Point&& p)                    = default;
-        Point& operator=(Point&& p)         = default;
-        ~Point()                            = default;
-
-        int& operator[](int i);
-        Point& operator-=(Point b);
-        Point& operator+=(Point b);
-        
-    private:
-        int x,y;
-
-};
-
-int& Point::operator[](int i){
-
-    if(i == 0) return x;
-    return y;
-}
-
-Point& Point::operator-=(Point b){
-    x -= b[0];
-    y -= b[1];
-    return *this;
-}
-
-Point& Point::operator+=(Point b){
-    x += b[0];
-    y += b[1];
-    return *this;
-}
-
-Point operator-(Point a, Point b){
-    return a-= b;
-}
-
-Point operator+(Point a, Point b){
-    return a+= b;
-}
-
-int operator*(Point a, Point b){
-    return a[0]*b[0] + a[1]*b[1];
-}
-
-bool operator==(Point a, Point b){
-    return (a[0] == b[0] && a[1]==b[1]);
-}
-
-bool operator!=(Point a, Point b){
-    return !(a==b);
-}
-
-int det(int mat[3][3]){
-    int d   = mat[0][0] * (mat[1][1] * mat[2][2] - mat[1][2] * mat[2][1]);
-    d       -= mat[1][0] * (mat[0][1] * mat[2][2] - mat[0][2] * mat[2][1]);
-    d       += mat[2][0] * (mat[0][1] * mat[1][2] - mat[0][2] * mat[1][1]);     
-    return d; 
-}
 
 class Triangle{
 
@@ -88,8 +25,8 @@ class Triangle{
 
         vector<Point> get_pts() const;   
         void set_pts(const Point& a, const Point& b, const Point& c);
-        std::list<int> get_points(){return {x[0],x[1],y[0],y[1],z[0],z[1]};}
-        std::list<int> get_nbh_points();
+        list<int> get_points(){return {x[0],x[1],y[0],y[1],z[0],z[1]};}
+        list<int> get_nbh_points();
         
         bool pt_contained(int p1, int p2);
         int nbh_position(shared_ptr<Triangle> A);
@@ -109,36 +46,19 @@ class Triangle{
 
 };
 
-
-std::list<int> Triangle::get_nbh_points(){
-    list<int> list({x[0],x[1],y[0],y[1],z[0],z[1]});
-    for(int i =0 ; i<3; i++){
-        if(nbh[i]){
-            list.push_back(nbh[i]->x[0]);
-            list.push_back(nbh[i]->x[1]);
-            list.push_back(nbh[i]->y[0]);
-            list.push_back(nbh[i]->y[1]);
-            list.push_back(nbh[i]->z[0]);
-            list.push_back(nbh[i]->z[1]);
-        }
-    }
-    return list;
-}
-
-//Get-function that returns the vertices of the triangle
 vector<Point> Triangle::get_pts() const{
     return vector<Point>({x,y,z});
 }
 
-//Set-function for the vertices (orientation - counterclockwise)
-void Triangle::set_pts(const Point& a, const Point& b, const Point& c){
-    //assert - a,b,c are oriented counterclockwise
+void Triangle::set_pts( const Point& a, const Point& b, const Point& c){
     x = a;
     y = b;
     z = c;
+    //Check that the points are oriented counter-clockwise
+    //int mat[3][3] = {{x[0], x[1], 1},{y[0], y[1], 1},{z[0], z[1], 1}};
+    //assert(!(det(mat) < 0));     
 }
 
-//Returns the position of a given neighbor
 int Triangle::nbh_position(shared_ptr<Triangle> A){
     for(int i = 0; i<3;i++){
         if(nbh[i] == A)
@@ -147,7 +67,6 @@ int Triangle::nbh_position(shared_ptr<Triangle> A){
     return -1;  //case: not a neighbor 
 }
 
-//Returns the remaining point for a given neighbor
 Point Triangle::nbh_point(int i){
     if(nbh[i]){
         auto pts = nbh[i]->get_pts();
@@ -159,7 +78,6 @@ Point Triangle::nbh_point(int i){
     return Point(0,0);  //case: there is no ith neighbor   
 }
 
-//Checks if a point is inside the given triangle
 bool Triangle::pt_contained(int p1, int p2){
     Point p(p1,p2);
     Point nxy((y - x)[1], -(y - x)[0]);
@@ -168,8 +86,9 @@ bool Triangle::pt_contained(int p1, int p2){
     return nxy*(p-x) < 0 &&  nyz*(p-y) < 0 && nzx*(p-z) < 0;
 }
 
-// initalizes triangles attached counter clockwise wrt the centerpoint z1,z2
+// Note that while initializing we make the Triangulation slightly bigger to handle points on the boundary
 void Triangle::initialize(shared_ptr<Triangle> this_ptr, int h, int w){
+    this_ptr->set_pts(Point(-1,-1),Point(w+1,h+1),Point(-1,h+1));
     auto E = make_shared<Triangle>(Triangle(-1, -1, w +1, -1, w +1, h+1));
     this_ptr->nbh[0] = E;
     E->nbh[2] = this_ptr; 
@@ -178,7 +97,7 @@ void Triangle::initialize(shared_ptr<Triangle> this_ptr, int h, int w){
 
 //Replaces the given triangle that contains a given point with three new triangles
 void Triangle::split(int x, int y, shared_ptr<Triangle> this_ptr){
-    // assert (!pt_contained(x,y))
+    assert(pt_contained(x,y));
     auto v = get_pts();
     auto B = nbh[1];
     auto C = nbh[2];
@@ -205,7 +124,7 @@ void Triangle::split(int x, int y, shared_ptr<Triangle> this_ptr){
     return;
 }
 
-//Adds a new point to the triangulation
+//go through triangluation and use split for a triangle that contains a given point
 shared_ptr<Triangle> Triangle::add_point(int x, int y, shared_ptr<Triangle> this_ptr){
     vector<shared_ptr<Triangle>> Trgls = {this_ptr};
     queue<shared_ptr<Triangle>> Cnddts;
@@ -228,7 +147,6 @@ shared_ptr<Triangle> Triangle::add_point(int x, int y, shared_ptr<Triangle> this
     return nullptr;
 }
 
-//Adds a new point to the triangulation
 list<int> Triangle::get_triangle_via_point(int x, int y, shared_ptr<Triangle> this_ptr){
     vector<shared_ptr<Triangle>> Trgls = {this_ptr};
     queue<shared_ptr<Triangle>> Cnddts;
@@ -262,9 +180,7 @@ bool Triangle::delaunay_prop(int i){
                         {x[l][0] - D[0], x[l][1] - D[1], (x[l][0] - D[0])*(x[l][0] - D[0]) + (x[l][1] - D[1])*(x[l][1] - D[1])},
                         {x[i][0] - D[0], x[i][1] - D[1], (x[i][0] - D[0])*(x[i][0] - D[0]) + (x[i][1] - D[1])*(x[i][1] - D[1])}
                     };
-    if( det(mat) > 0)
-        return false;
-    return true;
+    return !(det(mat) > 0);
 }
 
 //Restores the delaunay property locally
@@ -275,6 +191,16 @@ void Triangle::flip(int i, shared_ptr<Triangle> this_ptr){
     Point b = get_pts()[(i+2) % 3];
     Point c = get_pts()[i];
     Point d = nbh_point(i);
+
+    int mat0[3][3] = {{a[0], a[1], 1},{b[0], b[1], 1},{c[0], c[1], 1}};
+    if(det(mat0) < 0) 
+        return; 
+    int mat1[3][3] = {{a[0], a[1], 1},{b[0], b[1], 1},{d[0], d[1], 1}};
+    if(det(mat1) < 0)
+        return; 
+    int mat2[3][3] = {{b[0], b[1], 1},{c[0], c[1], 1},{d[0], d[1], 1}};
+    if(det(mat2) < 0)
+        return; 
 
     auto T_ab = nbh[(i+1) % 3];
     auto T_bc = nbh[(i+2) % 3];
@@ -329,13 +255,7 @@ void Triangle::re_delaunay_prop( shared_ptr<Triangle> this_ptr ){
 }
 
 PYBIND11_MODULE(Triangulation, m){
-    py::class_<Point>(m, "Point")
-        .def(py::init<int, int>())
-        .def(py::init<const Point&>())
-        .def(py::self += py::self)
-        .def(py::self -= py::self);
-
-    py::class_<Triangle, std::shared_ptr<Triangle>>(m, "Triangle")
+    py::class_<Triangle, shared_ptr<Triangle>>(m, "Triangle")
         .def(py::init<int,int,int,int,int,int>())
         .def(py::init<Point,Point,Point>())
         .def_readwrite("nbh", &Triangle::nbh)
@@ -343,8 +263,5 @@ PYBIND11_MODULE(Triangulation, m){
         .def("initialize", &Triangle::initialize)
         .def("re_delaunay_prop", &Triangle::re_delaunay_prop)
         .def("get_points", &Triangle::get_points)
-        .def("get_nbh", &Triangle::get_nbh_points)
         .def("get_triangle_via_point", &Triangle::get_triangle_via_point);
-
-
 }
