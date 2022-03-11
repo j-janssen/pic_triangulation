@@ -1,10 +1,3 @@
-/********************************************************/
-/*  NAME:   Jörg Janssen                                */
-/*  ORGN:   -                                           */
-/*  FILE:   Triangle.h                                  */ 
-/*  DATE:   Aug 7th 2021                                */
-/********************************************************/
-
 #ifndef LINEARALGEBRA_H
 #define LINEARALGEBRA
 

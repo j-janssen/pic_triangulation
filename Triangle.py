@@ -112,11 +112,11 @@ script_dir = os.path.dirname(__file__)
 abs_file_path = os.path.join(script_dir, rel_path)
 fineness = 10
 max_iteration = 100000
-lear_rate = 0.001
+learn_rate = 0.001
 print('Preprocessing starts!')
 
 
 NN = SOM(abs_file_path, fineness)
-NN.training(max_iteration, lear_rate)
+NN.training(max_iteration, learn_rate)
 NN.gen_image(abs_file_path)
 

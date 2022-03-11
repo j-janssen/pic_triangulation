@@ -25,8 +25,6 @@ class Triangle{
 
         vector<Point> get_pts() const;   
         void set_pts(const Point& a, const Point& b, const Point& c);
-        list<int> get_points(){return {x[0],x[1],y[0],y[1],z[0],z[1]};}
-        list<int> get_nbh_points();
         
         bool pt_contained(int p1, int p2);
         int nbh_position(shared_ptr<Triangle> A);
@@ -55,8 +53,8 @@ void Triangle::set_pts( const Point& a, const Point& b, const Point& c){
     y = b;
     z = c;
     //Check that the points are oriented counter-clockwise
-    //int mat[3][3] = {{x[0], x[1], 1},{y[0], y[1], 1},{z[0], z[1], 1}};
-    //assert(!(det(mat) < 0));     
+    int mat[3][3] = {{x[0], x[1], 1},{y[0], y[1], 1},{z[0], z[1], 1}};
+    assert(det(mat) > 0);     
 }
 
 int Triangle::nbh_position(shared_ptr<Triangle> A){
@@ -124,7 +122,7 @@ void Triangle::split(int x, int y, shared_ptr<Triangle> this_ptr){
     return;
 }
 
-//go through triangluation and use split for a triangle that contains a given point
+//go through triangluation (BSF) and use split for a triangle that contains a given point
 shared_ptr<Triangle> Triangle::add_point(int x, int y, shared_ptr<Triangle> this_ptr){
     vector<shared_ptr<Triangle>> Trgls = {this_ptr};
     queue<shared_ptr<Triangle>> Cnddts;
@@ -147,6 +145,7 @@ shared_ptr<Triangle> Triangle::add_point(int x, int y, shared_ptr<Triangle> this
     return nullptr;
 }
 
+//go through triangluation (BSF) and return triangle containing the given point
 list<int> Triangle::get_triangle_via_point(int x, int y, shared_ptr<Triangle> this_ptr){
     vector<shared_ptr<Triangle>> Trgls = {this_ptr};
     queue<shared_ptr<Triangle>> Cnddts;
@@ -168,7 +167,7 @@ list<int> Triangle::get_triangle_via_point(int x, int y, shared_ptr<Triangle> th
     return list<int>();
 }
 
-//checks if the delaunay property is satisfied wrt. the given and the ith triangle
+//checks if a adjacent point is not inside of the circle spanned by the three triangle-points
 bool Triangle::delaunay_prop(int i){
     if(nbh[i] == nullptr)   //trivial case 
         return true;
@@ -183,29 +182,28 @@ bool Triangle::delaunay_prop(int i){
     return !(det(mat) > 0);
 }
 
-//Restores the delaunay property locally
+//Two triangles correspond to a square with diagonal. Here we replace the diagonal by the other one.
 void Triangle::flip(int i, shared_ptr<Triangle> this_ptr){
-    int m = nbh[i]->nbh_position(this_ptr);
-
     Point a = get_pts()[(i+1) % 3];
     Point b = get_pts()[(i+2) % 3];
     Point c = get_pts()[i];
     Point d = nbh_point(i);
 
+    //There is a bug - the following cases should not arrise:
     int mat0[3][3] = {{a[0], a[1], 1},{b[0], b[1], 1},{c[0], c[1], 1}};
-    if(det(mat0) < 0) 
+    if(det(mat0) <= 0) 
         return; 
     int mat1[3][3] = {{a[0], a[1], 1},{b[0], b[1], 1},{d[0], d[1], 1}};
-    if(det(mat1) < 0)
+    if(det(mat1) <= 0)
         return; 
     int mat2[3][3] = {{b[0], b[1], 1},{c[0], c[1], 1},{d[0], d[1], 1}};
-    if(det(mat2) < 0)
+    if(det(mat2) <= 0)
         return; 
 
     auto T_ab = nbh[(i+1) % 3];
     auto T_bc = nbh[(i+2) % 3];
-    auto T_cd = nbh[i]->nbh[(m+1) % 3];
-    auto T_da = nbh[i]->nbh[(m+2) % 3];
+    auto T_cd = nbh[i]->nbh[(nbh[i]->nbh_position(this_ptr)+1) % 3];
+    auto T_da = nbh[i]->nbh[(nbh[i]->nbh_position(this_ptr)+2) % 3];
 
     nbh[i]->set_pts(a,b,d);
     nbh[i]->nbh[0] = T_ab;
@@ -225,7 +223,7 @@ void Triangle::flip(int i, shared_ptr<Triangle> this_ptr){
     return;
 }
 
-//Restores the delaunay property globally
+//go through triangluation (BSF) and use flip to restore the delaunay property
 void Triangle::re_delaunay_prop( shared_ptr<Triangle> this_ptr ){
     vector<shared_ptr<Triangle>> Trgls = {this_ptr};
     queue<shared_ptr<Triangle>> Cnddts;
@@ -262,6 +260,5 @@ PYBIND11_MODULE(Triangulation, m){
         .def("add_point", &Triangle::add_point)
         .def("initialize", &Triangle::initialize)
         .def("re_delaunay_prop", &Triangle::re_delaunay_prop)
-        .def("get_points", &Triangle::get_points)
         .def("get_triangle_via_point", &Triangle::get_triangle_via_point);
 }
