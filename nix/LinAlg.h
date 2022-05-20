@@ -1,6 +1,7 @@
 #ifndef LINEARALGEBRA_H
 #define LINEARALGEBRA
 
+//hier ein kommentar
 
 class Point{
 
